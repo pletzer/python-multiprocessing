@@ -15,7 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 import py_ecc
 import random
 import multiprocessing
@@ -29,10 +28,10 @@ def _run_tests():
         py_ecc.rs_code._test()
         py_ecc.file_ecc._test()
     """
-    print "Running Reed Salomon self tests...",
-    print py_ecc.rs_code._test(), ". Done!"
-    print "Running self tests for error correction on files...",
-    print py_ecc.file_ecc._test(), ". Done!"
+    print("Running Reed Salomon self tests...", end=' ')
+    print(py_ecc.rs_code._test(), ". Done!")
+    print("Running self tests for error correction on files...", end=' ')
+    print(py_ecc.file_ecc._test(), ". Done!")
 
 def worker(data):
     """
@@ -46,14 +45,14 @@ def test_pool(size):
     This test runs a pool of processes and calculates the squares of a list of
     integer values.
     """
-    print "### Running test_pool with {} processes".format(size)
+    print("### Running test_pool with {} processes".format(size))
     p = multiprocessing.Pool(size)
-    data = range(3)
+    data = list(range(3))
 
-    print data, "=>", p.map(worker, data)
+    print(data, "=>", p.map(worker, data))
     p.terminate()
     p.join()
-    print ""
+    print("")
 
 def worker2(data):
     """
@@ -69,15 +68,15 @@ def test_pool2(size):
     This test runs a pool of processes and calculates the square values
     from a list of list of integers.
     """
-    print "### Running test_pool2 with {} processes".format(size)
+    print("### Running test_pool2 with {} processes".format(size))
     p = multiprocessing.Pool(size)
-    data = [range(2*i) for i in range(2*size)]
+    data = [list(range(2*i)) for i in range(2*size)]
 
     returnedData = p.map(worker2, data)
     for i in range(len(data)):
-        print data[i]
-        print returnedData[i]
-        print ""
+        print(data[i])
+        print(returnedData[i])
+        print("")
 
     p.terminate()
     p.join()
@@ -90,7 +89,7 @@ def fail_workers(pool, failures):
     if failures > pool._processes:
         raise Exception("You want to fail {} workers from a total of {}, but you can't!!".format(failures, pool._processes))
 
-    ids = random.sample(range(pool._processes), failures)
+    ids = random.sample(list(range(pool._processes)), failures)
     for i in ids:
         "emulating a worker fails via its terminate()"
         pool._pool[i].terminate()
@@ -103,14 +102,14 @@ def test_pool_failing_workers(size, failures):
     """
     This test emulates failing "failures" workers from a pool of "size" number of workers.
     """
-    print "### Running pool test and emulate workers stop randomly"
+    print("### Running pool test and emulate workers stop randomly")
     #enable_debug()
     p = multiprocessing.Pool(size)
-    print "Workers => ", p._pool
-    print "Workers to make fail:", failures
+    print("Workers => ", p._pool)
+    print("Workers to make fail:", failures)
     fail_workers(p, failures)
-    print "Workers after failures:", p._pool
-    print ""
+    print("Workers after failures:", p._pool)
+    print("")
     p.terminate()
     p.join()
 
@@ -118,7 +117,7 @@ def who_i_am(data):
     """
     The job of this worker is simply tell who it is ;-)
     """
-    print "Hi! I'm {} and I'm processing {}!".format(multiprocessing.current_process().name, data)
+    print("Hi! I'm {} and I'm processing {}!".format(multiprocessing.current_process().name, data))
 
 def test_pool_who_i_am(size):
     """
@@ -126,14 +125,14 @@ def test_pool_who_i_am(size):
     each piece of data.
     We discover that the load is not uniformly distributed among processes, but data-ordered.
     """
-    print "### Running pool test for process introspection"
+    print("### Running pool test for process introspection")
     p = multiprocessing.Pool(size)
-    data = range(size*2)
+    data = list(range(size*2))
     datalist = [[i, i+1] for i in range(2*size)]
     "this time, we don't expect any result from the workers."
     p.map(who_i_am, data)
     p.map(who_i_am, datalist)
-    print ""
+    print("")
     p.terminate()
     p.join()
 
@@ -142,10 +141,10 @@ def test_pool_who_i_am_uniform(size):
     This test forces a uniform distribution of workload among processes.
     To do so, we implement a pool of Pools for simplicity.
     """
-    print "### Running pool test for uniform distribution of workload"
+    print("### Running pool test for uniform distribution of workload")
     p = [multiprocessing.Pool(1) for i in range(size)]
 
-    data = range(size*2)
+    data = list(range(size*2))
     datalist = [[i] for i in range(2*size)]
     datalist2 = [[i, i+1] for i in range(2*size)]
     "this time, we don't expect any result from the workers."
@@ -164,7 +163,7 @@ def test_pool_who_i_am_uniform(size):
     for pool in p:
         pool.terminate()
         pool.join()
-    print ""
+    print("")
 
 
 def enable_debug():
